@@ -1,9 +1,7 @@
 package de.mtobiasz.skyrimd;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.sql.rowset.serial.SerialBlob;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -39,5 +37,22 @@ public class DatabaseHandler {
             throw new RuntimeException(e);
         }
         return likes;
+    }
+
+    public static void addUser(User user){
+        try(Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg")){
+            PreparedStatement pstm = con.prepareStatement("INSERT INTO user(id, username, photo, location, birthday, description, gender, password) VALUES (?,?,?,?,?,?,?,?)");
+            pstm.setString(1,user.getId().toString());
+            pstm.setString(2,user.getUsername());
+            pstm.setBlob(3,new SerialBlob(user.getPhoto()));
+            pstm.setString(4,user.getLocation());
+            pstm.setDate(5,Date.valueOf(user.getBirthday()));
+            pstm.setString(6,user.getDescription());
+            pstm.setString(7,user.getGender());
+            pstm.setString(8,user.getPassword());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 }
