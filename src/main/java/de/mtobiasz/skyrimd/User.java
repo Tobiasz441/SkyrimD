@@ -1,7 +1,6 @@
 package de.mtobiasz.skyrimd;
 
 import org.springframework.boot.jackson.JsonComponent;
-import org.springframework.boot.json.GsonJsonParser;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
