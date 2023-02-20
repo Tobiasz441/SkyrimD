@@ -3,11 +3,11 @@ package de.mtobiasz.skyrimd;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import de.mtobiasz.skyrimd.JsonClasses.UserId;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
@@ -28,16 +28,30 @@ public class RestController {
 		}
 	}
 
+	@GetMapping("/api/getLikes")
+	public String getLikes(@PathVariable String id) throws JsonProcessingException {
+		var mapper = new ObjectMapper();
+		ArrayList<UserId> jsonList = new ArrayList<UserId>();
+		ArrayList<String> likes = DatabaseHandler.getLikes(id);
+		for (String like : likes) {
+			jsonList.add(new UserId(like));
+		}
+		return mapper.writeValueAsString(jsonList);
+	}
+
 	@PostMapping("/api/addUser")
 	public boolean addUser(@RequestBody User user){
-		return DatabaseHandler.addUser(user);
+		return true;
+		//return DatabaseHandler.addUser(user);
 	}
 
-
-	/*
-	@GetMapping
-	public String addUser(){
-
+	@DeleteMapping("/api/deleteUser")
+	void deleteEmployee(@PathVariable String id) {
+		DatabaseHandler.deleteUser(id);
 	}
-	*/
+
+	@PutMapping("/api/updateUser")
+	void updateUser(@RequestBody User user){
+		DatabaseHandler.updateUser(user);
+	}
 }
