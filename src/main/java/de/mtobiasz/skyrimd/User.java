@@ -41,6 +41,16 @@ public class User {
         this.password = password;
     }
 
+    public User(UUID id,String username, byte[] photo, String location, LocalDate birthday, String description, String gender) {
+        this.id = id;
+        this.username = username;
+        this.photo = photo;
+        this.location = location;
+        this.description = description;
+        this.birthday = birthday;
+        this.gender = gender;
+    }
+
     public void getLikes(){
 
     }

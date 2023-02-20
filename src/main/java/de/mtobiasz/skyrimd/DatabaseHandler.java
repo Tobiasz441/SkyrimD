@@ -19,7 +19,7 @@ public class DatabaseHandler {
     public static User getRandomUser() throws SQLException {
         try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg"); ResultSet rs = con.createStatement().executeQuery("SELECT * FROM user ORDER BY RAND() LIMIT 1")) {
             if (rs.next()) {
-                return new User(UUID.fromString(rs.getString(1)), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getDate(5).toLocalDate(), rs.getString(6), rs.getString(7), rs.getString(8));
+                return new User(UUID.fromString(rs.getString(1)),rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getDate(5).toLocalDate(), rs.getString(6), rs.getString(7));
             }
         }
         return null;
@@ -40,7 +40,7 @@ public class DatabaseHandler {
     public static void addUser(User user) {
         try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg")) {
             PreparedStatement pstm = con.prepareStatement("INSERT INTO user(id, username, photo, location, birthday, description, gender, password) VALUES (?,?,?,?,?,?,?,?)");
-            pstm.setString(1, user.getId().toString());
+            pstm.setString(1, UUID.randomUUID().toString());
             pstm.setString(2, user.getUsername());
             pstm.setBlob(3, new SerialBlob(user.getPhoto()));
             pstm.setString(4, user.getLocation());
@@ -76,9 +76,9 @@ public class DatabaseHandler {
         try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg")) {
             PreparedStatement pstm = con.prepareStatement("DELETE FROM user WHERE id = ?");
             pstm.setString(1, id);
+            pstm.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }
