@@ -29,9 +29,9 @@ public class RestController {
 	}
 
 	@GetMapping("/api/getLikes")
-	public String getLikes(@PathVariable String id) throws JsonProcessingException {
+	public String getLikes(@PathVariable String id) throws JsonProcessingException, SQLException {
 		var mapper = new ObjectMapper();
-		ArrayList<UserId> jsonList = new ArrayList<UserId>();
+		ArrayList<UserId> jsonList = new ArrayList<>();
 		ArrayList<String> likes = DatabaseHandler.getLikes(id);
 		for (String like : likes) {
 			jsonList.add(new UserId(like));
