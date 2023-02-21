@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
@@ -29,24 +30,50 @@ public class RestController {
 	}
 
 	@GetMapping("/api/getLikes")
-	public String getLikes(@PathVariable String id) throws JsonProcessingException, SQLException {
+	public String getLikes(@PathVariable String  id) {
 		var mapper = new ObjectMapper();
 		ArrayList<UserId> jsonList = new ArrayList<>();
-		ArrayList<String> likes = DatabaseHandler.getLikes(id);
-		for (String like : likes) {
+		ArrayList<UUID> likes = DatabaseHandler.getLikes(UUID.fromString(id));
+		for (UUID like : likes) {
 			jsonList.add(new UserId(like));
 		}
-		return mapper.writeValueAsString(jsonList);
+		try {
+			return mapper.writeValueAsString(jsonList);
+		} catch (JsonProcessingException e) {
+			return "Error occurred " + e.getLocalizedMessage();
+		}
+
+	}
+
+	@GetMapping("/api/getUser")
+	public String getUser(@PathVariable UUID id) {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		try {
+			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(DatabaseHandler.getUserById(id));
+		} catch (SQLException | JsonProcessingException e) {
+			return "Error occurred " + e.getLocalizedMessage();
+		}
+	}
+
+	@GetMapping("/api/getUsers")
+	public String getUsers() {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		try {
+			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(DatabaseHandler.getUsers());
+		} catch (SQLException | JsonProcessingException e) {
+			return "Error occurred " + e.getLocalizedMessage();
+		}
 	}
 
 	@PostMapping("/api/addUser")
 	public boolean addUser(@RequestBody User user){
-		return true;
-		//return DatabaseHandler.addUser(user);
+		return DatabaseHandler.addUser(user);
 	}
 
 	@DeleteMapping("/api/deleteUser")
-	void deleteEmployee(@PathVariable String id) {
+	void deleteUser(@PathVariable String id) {
 		DatabaseHandler.deleteUser(id);
 	}
 

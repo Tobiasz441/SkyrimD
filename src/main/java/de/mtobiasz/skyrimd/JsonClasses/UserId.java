@@ -1,13 +1,15 @@
 package de.mtobiasz.skyrimd.JsonClasses;
 
-public class UserId {
-    private String id;
+import java.util.UUID;
 
-    public UserId(String id) {
+public class UserId {
+    private UUID id;
+
+    public UserId(UUID id) {
         this.id = id;
     }
 
-    public String getId(){
+    public UUID getId(){
         return id;
     }
 }
