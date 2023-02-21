@@ -27,6 +27,18 @@ public class DatabaseHandler {
         });
         return users;
     }
+
+    public static boolean likeUserById(UUID user, UUID like) {
+        try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg");
+            PreparedStatement pstm = con.prepareStatement("INSERT INTO skyrimd.likes(fk_id1, fk_id2) VALUES (?,?)")) {
+            pstm.setString(1, user.toString());
+            pstm.setString(2, like.toString());
+            return true;
+        } catch (SQLException e){
+            return false;
+        }
+    }
+
     public static ArrayList<User> getUsers() throws SQLException {
         ArrayList<User> users = new ArrayList<>();
         try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg");
