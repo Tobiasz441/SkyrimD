@@ -8,15 +8,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
-
-	@GetMapping("/test")
-	public String test() {
-		return "Rest Test";
-	}
 
 	@GetMapping("/api/randUser")
 	public String showRandomUser() {
@@ -25,7 +22,15 @@ public class RestController {
 		try {
 			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(DatabaseHandler.getRandomUser());
 		} catch (SQLException | JsonProcessingException e) {
-			return "Error occurred " + e.getLocalizedMessage();
+			Map<String,String> payload = new HashMap<>();
+			payload.put("error", String.valueOf(true));
+			payload.put("message",e.getLocalizedMessage());
+
+			try {
+				return new ObjectMapper().writeValueAsString(payload);
+			} catch (JsonProcessingException je){
+				return "{error = \"true\", message = \"" + e.getLocalizedMessage() + "\"";
+			}
 		}
 	}
 
@@ -33,26 +38,42 @@ public class RestController {
 	public String getLikes(@PathVariable String  id) {
 		var mapper = new ObjectMapper();
 		ArrayList<UserId> jsonList = new ArrayList<>();
-		ArrayList<UUID> likes = DatabaseHandler.getLikes(UUID.fromString(id));
-		for (UUID like : likes) {
-			jsonList.add(new UserId(like));
-		}
 		try {
+			ArrayList<UUID> likes = DatabaseHandler.getLikes(UUID.fromString(id));
+			for (UUID like : likes) {
+				jsonList.add(new UserId(like));
+			}
 			return mapper.writeValueAsString(jsonList);
-		} catch (JsonProcessingException e) {
-			return "Error occurred " + e.getLocalizedMessage();
+		} catch (JsonProcessingException | SQLException e) {
+			Map<String,String> payload = new HashMap<>();
+			payload.put("error", String.valueOf(true));
+			payload.put("message",e.getLocalizedMessage());
+
+			try {
+				return new ObjectMapper().writeValueAsString(payload);
+			} catch (JsonProcessingException je){
+				return "{error = \"true\", message = \"" + e.getLocalizedMessage() + "\"";
+			}
 		}
 
 	}
 
 	@GetMapping("/api/getUser")
-	public String getUser(@PathVariable UUID id) {
+	public String getUser(@PathVariable String id) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
 		try {
-			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(DatabaseHandler.getUserById(id));
+			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(DatabaseHandler.getUserById(UUID.fromString(id)));
 		} catch (SQLException | JsonProcessingException e) {
-			return "Error occurred " + e.getLocalizedMessage();
+			Map<String,String> payload = new HashMap<>();
+			payload.put("error", String.valueOf(true));
+			payload.put("message",e.getLocalizedMessage());
+
+			try {
+				return new ObjectMapper().writeValueAsString(payload);
+			} catch (JsonProcessingException je){
+				return "{error = \"true\", message = \"" + e.getLocalizedMessage() + "\"";
+			}
 		}
 	}
 
@@ -63,27 +84,78 @@ public class RestController {
 		try {
 			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(DatabaseHandler.getUsers());
 		} catch (SQLException | JsonProcessingException e) {
-			return "Error occurred " + e.getLocalizedMessage();
+			Map<String,String> payload = new HashMap<>();
+			payload.put("error", String.valueOf(true));
+			payload.put("message",e.getLocalizedMessage());
+
+			try {
+				return new ObjectMapper().writeValueAsString(payload);
+			} catch (JsonProcessingException je){
+				return "{error = \"true\", message = \"" + e.getLocalizedMessage() + "\"";
+			}
+		}
+	}
+
+	@GetMapping("/api/getUsersId")
+	public String getUsersById(@RequestBody ArrayList<String> ids) {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		ArrayList<UUID> uuid = new ArrayList<>();
+		for (String id: ids) {
+			uuid.add(UUID.fromString(id));
+		}
+		try {
+			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(DatabaseHandler.getUsersById(uuid));
+		} catch (SQLException | JsonProcessingException e) {
+			Map<String,String> payload = new HashMap<>();
+			payload.put("error", String.valueOf(true));
+			payload.put("message",e.getLocalizedMessage());
+
+			try {
+				return new ObjectMapper().writeValueAsString(payload);
+			} catch (JsonProcessingException je){
+				return "{error = \"true\", message = \"" + e.getLocalizedMessage() + "\"";
+			}
 		}
 	}
 
 	@PostMapping("/api/like")
 	public boolean likeUser(@RequestBody UUID id, @RequestBody UUID like) {
-		return DatabaseHandler.likeUserById(id, like);
+		try {
+			DatabaseHandler.likeUserById(id, like);
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
 	}
 
 	@PostMapping("/api/addUser")
 	public boolean addUser(@RequestBody User user){
-		return DatabaseHandler.addUser(user);
+		try {
+			DatabaseHandler.addUser(user);
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
 	}
 
 	@DeleteMapping("/api/deleteUser")
-	void deleteUser(@PathVariable String id) {
-		DatabaseHandler.deleteUser(id);
+	public boolean deleteUser(@PathVariable String id) {
+		try {
+			DatabaseHandler.deleteUser(id);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	@PutMapping("/api/updateUser")
-	void updateUser(@RequestBody User user){
-		DatabaseHandler.updateUser(user);
+	public boolean updateUser(@RequestBody User user){
+		try {
+			DatabaseHandler.updateUser(user);
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
 	}
 }
