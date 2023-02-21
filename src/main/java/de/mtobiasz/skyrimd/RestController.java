@@ -67,6 +67,11 @@ public class RestController {
 		}
 	}
 
+	@PostMapping("/api/like")
+	public boolean likeUser(@RequestBody UUID id, @RequestBody UUID like) {
+		return DatabaseHandler.likeUserById(id, like);
+	}
+
 	@PostMapping("/api/addUser")
 	public boolean addUser(@RequestBody User user){
 		return DatabaseHandler.addUser(user);
