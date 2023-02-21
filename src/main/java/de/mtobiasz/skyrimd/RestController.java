@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
@@ -32,7 +33,7 @@ public class RestController {
 	public String getLikes(@PathVariable String id) throws JsonProcessingException, SQLException {
 		var mapper = new ObjectMapper();
 		ArrayList<UserId> jsonList = new ArrayList<>();
-		ArrayList<String> likes = DatabaseHandler.getLikes(id);
+		ArrayList<String> likes = DatabaseHandler.getLikes(UUID.fromString(id));
 		for (String like : likes) {
 			jsonList.add(new UserId(like));
 		}

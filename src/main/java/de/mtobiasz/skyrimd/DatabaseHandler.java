@@ -49,12 +49,12 @@ public class DatabaseHandler {
     }
 
     //Returns
-    public static ArrayList<String> getLikes(String id) throws SQLException {
+    public static ArrayList<String> getLikes(UUID id) throws SQLException {
         ArrayList<String> likes = new ArrayList<>();
         try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg");
              PreparedStatement pstm = con.prepareStatement("SELECT * FROM skyrimd.likes WHERE fk_id1 LIKE ? AND fk_id2 IN (SELECT fk_id1 FROM likes WHERE fk_id2 LIKE ?)")) {
-            pstm.setString(1,id);
-            pstm.setString(2,id);
+            pstm.setString(1,id.toString());
+            pstm.setString(2,id.toString());
             ResultSet rs = pstm.executeQuery();
             while (rs.next()) {
                 likes.add(rs.getString(1));

@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class SkyrimDApplication {
 
     public static void main(String[] args) {
+        
         SpringApplication.run(SkyrimDApplication.class, args);
 
     }
