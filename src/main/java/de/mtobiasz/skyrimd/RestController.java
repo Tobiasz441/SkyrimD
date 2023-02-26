@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@CrossOrigin
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
 
@@ -77,6 +78,7 @@ public class RestController {
 		}
 	}
 
+	@CrossOrigin(origins = "*")
 	@GetMapping("/api/getUsers")
 	public String getUsers() {
 		ObjectMapper mapper = new ObjectMapper();
@@ -119,10 +121,13 @@ public class RestController {
 		}
 	}
 
+	//TODO: Funktionen von RequestBody auf RequestParam umstellen
 	@PostMapping("/api/like")
-	public boolean likeUser(@RequestBody UUID id, @RequestBody UUID like) {
+	public boolean likeUser(@RequestParam String id, @RequestParam String like) {
 		try {
-			DatabaseHandler.likeUserById(id, like);
+			System.out.println(id);
+			System.out.println(like);
+			DatabaseHandler.likeUserById(UUID.fromString(id), UUID.fromString(like));
 			return true;
 		} catch (SQLException e) {
 			return false;

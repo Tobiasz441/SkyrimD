@@ -1,3 +1,4 @@
+USE skyrimd;
 -- MariaDB dump 10.19  Distrib 10.11.2-MariaDB, for Linux (x86_64)
 --
 -- Host: 127.0.0.1    Database: skyrimd

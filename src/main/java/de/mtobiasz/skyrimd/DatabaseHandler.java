@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class DatabaseHandler {
     public static User getUserById(UUID uuid) throws SQLException {
-        try(Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg");
+        try(Connection con = DriverManager.getConnection("jdbc:mariadb://192.168.178.201:3306/skyrimd", "eisberg", "eisberg");
         PreparedStatement pstm = con.prepareStatement("SELECT * FROM skyrimd.user WHERE id LIKE ?")){
             pstm.setString(1,uuid.toString());
             ResultSet rs = pstm.executeQuery();
@@ -28,16 +28,17 @@ public class DatabaseHandler {
     }
 
     public static void likeUserById(UUID user, UUID like) throws SQLException {
-        try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg");
+        try (Connection con = DriverManager.getConnection("jdbc:mariadb://192.168.178.201:3306/skyrimd", "eisberg", "eisberg");
             PreparedStatement pstm = con.prepareStatement("INSERT INTO skyrimd.likes(fk_id1, fk_id2) VALUES (?,?)")) {
             pstm.setString(1, user.toString());
             pstm.setString(2, like.toString());
+            pstm.execute();
         }
     }
 
     public static ArrayList<User> getUsers() throws SQLException {
         ArrayList<User> users = new ArrayList<>();
-        try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg");
+        try (Connection con = DriverManager.getConnection("jdbc:mariadb://192.168.178.201:3306/skyrimd", "eisberg", "eisberg");
              ResultSet rs = con.createStatement().executeQuery("SELECT * FROM skyrimd.user")) {
             while (rs.next()) {
                 users.add(new User(UUID.fromString(rs.getString(1)), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getDate(5).toLocalDate(), rs.getString(6), rs.getString(7), rs.getString(8)));
@@ -47,7 +48,7 @@ public class DatabaseHandler {
     }
 
     public static User getRandomUser() throws SQLException {
-        try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg");
+        try (Connection con = DriverManager.getConnection("jdbc:mariadb://192.168.178.201:3306/skyrimd", "eisberg", "eisberg");
              ResultSet rs = con.createStatement().executeQuery("SELECT * FROM skyrimd.user ORDER BY RAND() LIMIT 1")) {
             if (rs.next()) {
                 return new User(UUID.fromString(rs.getString(1)), rs.getString(2), rs.getBytes(3), rs.getString(4), rs.getDate(5).toLocalDate(), rs.getString(6), rs.getString(7));
@@ -59,7 +60,7 @@ public class DatabaseHandler {
     //Returns
     public static ArrayList<UUID> getLikes(UUID id) throws SQLException {
         ArrayList<UUID> likes = new ArrayList<>();
-        try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg");
+        try (Connection con = DriverManager.getConnection("jdbc:mariadb://192.168.178.201:3306/skyrimd", "eisberg", "eisberg");
              PreparedStatement pstm = con.prepareStatement("SELECT fk_id2 FROM skyrimd.likes WHERE fk_id1 LIKE ? AND fk_id2 IN (SELECT fk_id1 FROM likes WHERE fk_id2 LIKE ?)")) {
             pstm.setString(1,id.toString());
             pstm.setString(2,id.toString());
@@ -72,7 +73,7 @@ public class DatabaseHandler {
     }
 
     public static void addUser(User user) throws SQLException {
-        try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg")) {
+        try (Connection con = DriverManager.getConnection("jdbc:mariadb://192.168.178.201:3306/skyrimd", "eisberg", "eisberg")) {
             PreparedStatement pstm = con.prepareStatement("INSERT INTO skyrimd.user(id, username, photo, location, birthday, description, gender, password) VALUES (?,?,?,?,?,?,?,?)");
             pstm.setString(1, UUID.randomUUID().toString());
             pstm.setString(2, user.getUsername());
@@ -87,7 +88,7 @@ public class DatabaseHandler {
     }
 
     public static void updateUser(User user) throws SQLException {
-        try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg")) {
+        try (Connection con = DriverManager.getConnection("jdbc:mariadb://192.168.178.201:3306/skyrimd", "eisberg", "eisberg")) {
             PreparedStatement pstm = con.prepareStatement("UPDATE skyrimd.user SET username = ?, photo = ?,  location = ?, birthday = ?, description = ?, gender = ?, password = ? WHERE id = ?");
             pstm.setString(8, user.getId().toString());
             pstm.setString(1, user.getUsername());
@@ -103,7 +104,7 @@ public class DatabaseHandler {
     }
 
     public static void deleteUser(String id) throws Exception {
-        try (Connection con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/skyrimd", "eisberg", "eisberg")) {
+        try (Connection con = DriverManager.getConnection("jdbc:mariadb://192.168.178.201:3306/skyrimd", "eisberg", "eisberg")) {
             PreparedStatement pstm = con.prepareStatement("DELETE FROM skyrimd.user WHERE id = ?");
             pstm.setString(1, id);
             pstm.executeUpdate();
