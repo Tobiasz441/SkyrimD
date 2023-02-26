@@ -99,7 +99,7 @@ public class RestController {
 	}
 
 	@GetMapping("/api/getUsersId")
-	public String getUsersById(@RequestBody ArrayList<String> ids) {
+	public String getUsersById(@RequestParam ArrayList<String> ids) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
 		ArrayList<UUID> uuid = new ArrayList<>();
@@ -121,12 +121,9 @@ public class RestController {
 		}
 	}
 
-	//TODO: Funktionen von RequestBody auf RequestParam umstellen
 	@PostMapping("/api/like")
 	public boolean likeUser(@RequestParam String id, @RequestParam String like) {
 		try {
-			System.out.println(id);
-			System.out.println(like);
 			DatabaseHandler.likeUserById(UUID.fromString(id), UUID.fromString(like));
 			return true;
 		} catch (SQLException e) {
@@ -135,7 +132,7 @@ public class RestController {
 	}
 
 	@PostMapping("/api/addUser")
-	public boolean addUser(@RequestBody User user){
+	public boolean addUser(@RequestParam User user){
 		try {
 			DatabaseHandler.addUser(user);
 			return true;
@@ -155,7 +152,7 @@ public class RestController {
 	}
 
 	@PutMapping("/api/updateUser")
-	public boolean updateUser(@RequestBody User user){
+	public boolean updateUser(@RequestParam User user){
 		try {
 			DatabaseHandler.updateUser(user);
 			return true;
