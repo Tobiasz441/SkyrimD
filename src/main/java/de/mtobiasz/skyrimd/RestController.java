@@ -7,6 +7,7 @@ import de.mtobiasz.skyrimd.JsonClasses.UserId;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -132,9 +133,9 @@ public class RestController {
 	}
 
 	@PostMapping("/api/addUser")
-	public boolean addUser(@RequestParam User user){
+	public boolean addUser(@RequestParam String username, @RequestParam byte[] photo, @RequestParam String location, @RequestParam LocalDate birthday, @RequestParam String description, @RequestParam String gender, @RequestParam String password){
 		try {
-			DatabaseHandler.addUser(user);
+			DatabaseHandler.addUser(new User(UUID.randomUUID(), username, photo, location, birthday, description, gender, password ));
 			return true;
 		} catch (SQLException e) {
 			return false;
